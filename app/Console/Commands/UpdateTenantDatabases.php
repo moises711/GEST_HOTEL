@@ -13,10 +13,17 @@ class UpdateTenantDatabases extends Command
 
     public function handle()
     {
-        $tenants = DB::connection('landlord')->table('tenants')->get();
+        $landlordConnection = config('multitenancy.landlord_database_connection_name', 'landlord');
+
+        if (is_null(config("database.connections.{$landlordConnection}"))) {
+            $this->error("La conexión de base de datos '{$landlordConnection}' no está configurada. Revisa config/database.php y limpia la caché de configuración.");
+            return 1;
+        }
+
+        $tenants = DB::connection($landlordConnection)->table('tenants')->get();
 
         foreach ($tenants as $tenant) {
-            DB::connection('landlord')->table('tenants')->where('id', $tenant->id)->update([
+            DB::connection($landlordConnection)->table('tenants')->where('id', $tenant->id)->update([
                 'database' => database_path('tenant_' . $tenant->id . '.sqlite'),
             ]);
             $this->info("Updated database path for tenant {$tenant->name}");

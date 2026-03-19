@@ -2,12 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Spatie\Multitenancy\Models\Concerns\UsesTenantConnection;
+use Spatie\Multitenancy\Models\Tenant as BaseTenant;
 
-class Tenant extends Model
+class Tenant extends BaseTenant
 {
-    use UsesTenantConnection;
-
-    protected $fillable = ['name', 'domain'];
+    // Permitir asignación masiva de la columna `database`
+    protected $fillable = ['name', 'domain', 'database'];
 }
