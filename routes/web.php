@@ -41,6 +41,31 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::resource('admins', SuperAdminAdminController::class)->except(['show']);
         Route::resource('hotels', SuperAdminHotelController::class);
+
+        // Nuevas rutas del dashboard de Super Admin
+        Route::get('billing', function () {
+            return Inertia::render('SuperAdmin/Billing/Index');
+        })->name('billing.index');
+
+        Route::get('subscriptions', function () {
+            return Inertia::render('SuperAdmin/Subscriptions/Index');
+        })->name('subscriptions.index');
+
+        Route::get('modules', function () {
+            return Inertia::render('SuperAdmin/Modules/Index');
+        })->name('modules.index');
+
+        Route::get('plans', function () {
+            return Inertia::render('SuperAdmin/Plans/Index');
+        })->name('plans.index');
+
+        Route::get('tenants', function () {
+            return Inertia::render('SuperAdmin/Tenants/Index');
+        })->name('tenants.index');
+
+        Route::get('notifications', function () {
+            return Inertia::render('SuperAdmin/Notifications/Index');
+        })->name('notifications.index');
     });
 });
 
