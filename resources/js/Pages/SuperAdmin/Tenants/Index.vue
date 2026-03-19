@@ -1,13 +1,22 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
 
-const tenants = [
+const tenants = ref([
   { id: 'tenant_paraíso_azul', hotel: 'Hotel Paraíso Azul', db_name: 'db_hotel_1', status: 'active' },
   { id: 'tenant_montaña_mágica', hotel: 'Montaña Mágica Lodge', db_name: 'db_hotel_2', status: 'active' },
   { id: 'tenant_playa_sol', hotel: 'Playa del Sol Resort', db_name: 'db_hotel_3', status: 'inactive' },
   { id: 'tenant_estelar', hotel: 'Hotel Estelar', db_name: 'db_hotel_4', status: 'active' },
-];
+]);
+
+// --- KPIs ---
+const kpis = computed(() => ({
+    total: tenants.value.length,
+    active: tenants.value.filter(t => t.status === 'active').length,
+    inactive: tenants.value.filter(t => t.status === 'inactive').length
+}));
+
 </script>
 
 <template>
@@ -17,6 +26,22 @@ const tenants = [
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">Control de Usuarios</h2>
         </template>
+
+        <!-- Tarjetas de Información -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h3 class="text-sm font-medium text-gray-500">Total de Usuarios</h3>
+                <p class="text-3xl font-semibold text-gray-900">{{ kpis.total }}</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h3 class="text-sm font-medium text-gray-500">Usuarios Activos</h3>
+                <p class="text-3xl font-semibold text-green-600">{{ kpis.active }}</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h3 class="text-sm font-medium text-gray-500">Usuarios Inactivos</h3>
+                <p class="text-3xl font-semibold text-red-600">{{ kpis.inactive }}</p>
+            </div>
+        </div>
 
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6">

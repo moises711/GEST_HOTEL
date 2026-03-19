@@ -34,7 +34,6 @@ return [
 
         'sqlite' => [
             'driver' => 'sqlite',
-            'url' => env('DB_URL'),
             'database' => env('DB_DATABASE', database_path('database.sqlite')),
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
@@ -46,7 +45,6 @@ return [
 
         'landlord' => [
             'driver' => 'sqlite',
-            'url' => env('DB_URL'),
             'database' => env('DB_DATABASE', database_path('database.sqlite')),
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
@@ -58,7 +56,6 @@ return [
 
         'tenant' => [
             'driver' => 'sqlite',
-            'url' => env('DB_URL'),
             'database' => null, // This will be set dynamically
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),

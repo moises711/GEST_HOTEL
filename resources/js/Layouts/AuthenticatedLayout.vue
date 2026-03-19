@@ -46,6 +46,9 @@ const showingSidebar = ref(false);
                 <NavLink :href="route('superadmin.tenants.index')" :active="route().current('superadmin.tenants.index')" variant="sidebar">
                     Usuarios
                 </NavLink>
+                <NavLink :href="route('superadmin.auditlog.index')" :active="route().current('superadmin.auditlog.index')" variant="sidebar">
+                    Auditoría
+                </NavLink>
                 <NavLink :href="route('superadmin.notifications.index')" :active="route().current('superadmin.notifications.index')" variant="sidebar">
                     Notificaciones
                 </NavLink>
