@@ -1,34 +1,20 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
-// En el futuro, esto vendrá como prop desde el controlador
-const admins = [
-  {
-    id: 1,
-    name: 'Juan Perez',
-    email: 'juan.perez@hotelx.com',
-    start_date: '2023-01-15',
-    expiration_date: '2025-01-15',
-    status: 'Activo'
-  },
-  {
-    id: 2,
-    name: 'Ana Gomez',
-    email: 'ana.gomez@hotely.com',
-    start_date: '2022-11-01',
-    expiration_date: '2024-11-01',
-    status: 'Activo'
-  },
-  {
-    id: 3,
-    name: 'Carlos Ruiz',
-    email: 'carlos.ruiz@hotelz.com',
-    start_date: '2023-05-20',
-    expiration_date: '2024-05-20',
-    status: 'Expirado'
-  },
-];
+const props = defineProps({ admins: Object });
+const admins = computed(() => props.admins?.data ?? []);
+
+const deleteAdmin = (adminId) => {
+    if (!confirm('¿Eliminar administrador?')) {
+        return;
+    }
+
+    router.delete(route('superadmin.admins.destroy', adminId), {
+        preserveScroll: true,
+    });
+};
 
 </script>
 
@@ -70,17 +56,20 @@ const admins = [
                                 <tr v-for="admin in admins" :key="admin.id">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ admin.name }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ admin.email }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ admin.start_date }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ admin.expiration_date }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ admin.hotel?.name || '—' }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ admin.plan?.ends_at || '—' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span :class="admin.status === 'Activo' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
-                                            {{ admin.status }}
+                                        <span :class="admin.plan ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
+                                            {{ admin.plan ? 'Activo' : 'Sin plan' }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <Link :href="route('superadmin.admins.edit', admin.id)" class="text-indigo-600 hover:text-indigo-900 mr-4">Editar</Link>
-                                        <a href="#" @click.prevent="alert('Funcionalidad de eliminar pendiente.')" class="text-red-600 hover:text-red-900">Eliminar</a>
+                                        <button @click="deleteAdmin(admin.id)" class="text-red-600 hover:text-red-900">Eliminar</button>
                                     </td>
+                                </tr>
+                                <tr v-if="admins.length === 0">
+                                    <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">No hay administradores registrados.</td>
                                 </tr>
                             </tbody>
                         </table>
