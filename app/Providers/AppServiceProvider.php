@@ -21,5 +21,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Vite::prefetch(concurrency: 3);
+
+        // Registrar alias de middleware 'role' para usar ->middleware('role:...') en rutas
+        if ($this->app->bound('router')) {
+            $this->app['router']->aliasMiddleware('role', \App\Http\Middleware\EnsureRole::class);
+        }
     }
 }

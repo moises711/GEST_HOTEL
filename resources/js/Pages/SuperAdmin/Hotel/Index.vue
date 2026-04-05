@@ -1,13 +1,20 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
-// Datos de ejemplo
-const hotels = [
-  { id: 1, name: 'Hotel Paraíso', owner: 'Juan Pérez', email: 'juan@hotelparaiso.com', status: 'activo', plan: 'Premium', expires_at: '2024-12-31' },
-  { id: 2, name: 'Resort Montaña', owner: 'Ana Gómez', email: 'ana@resortmontana.com', status: 'suspendido', plan: 'Básico', expires_at: '2024-11-20' },
-  { id: 3, name: 'Hotel Central', owner: 'Luis Torres', email: 'luis@hotelcentral.com', status: 'vencido', plan: 'Pro', expires_at: '2024-10-15' },
-];
+const props = defineProps({ hotels: Object });
+const list = computed(() => props.hotels?.data ?? []);
+
+const suspendHotel = (hotelId) => {
+    if (!confirm('¿Suspender hotel?')) {
+        return;
+    }
+
+    router.post(route('superadmin.hotels.deactivate', hotelId), {}, {
+        preserveScroll: true,
+    });
+};
 
 </script>
 
@@ -37,9 +44,9 @@ const hotels = [
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                <tr v-for="hotel in hotels" :key="hotel.id">
+                                <tr v-for="hotel in list" :key="hotel.id">
                                     <td class="px-6 py-4 whitespace-nowrap">{{ hotel.name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ hotel.owner }} / {{ hotel.email }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ hotel.owner }} / {{ hotel.owner_email }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span :class="{
                                             'bg-green-100 text-green-800': hotel.status === 'activo',
@@ -52,10 +59,13 @@ const hotels = [
                                     <td class="px-6 py-4 whitespace-nowrap">{{ hotel.plan }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ hotel.expires_at }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <a href="#" class="text-indigo-600 hover:text-indigo-900">Ver</a>
-                                        <a href="#" class="ml-4 text-indigo-600 hover:text-indigo-900">Editar</a>
-                                        <a href="#" class="ml-4 text-red-600 hover:text-red-900">Suspender</a>
+                                        <Link :href="route('superadmin.hotels.show', hotel.id)" class="text-indigo-600 hover:text-indigo-900">Ver</Link>
+                                        <Link :href="route('superadmin.hotels.edit', hotel.id)" class="ml-4 text-indigo-600 hover:text-indigo-900">Editar</Link>
+                                        <button @click="suspendHotel(hotel.id)" class="ml-4 text-red-600 hover:text-red-900">Suspender</button>
                                     </td>
+                                </tr>
+                                <tr v-if="list.length === 0">
+                                    <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">No hay hoteles registrados.</td>
                                 </tr>
                             </tbody>
                         </table>

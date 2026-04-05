@@ -33,6 +33,24 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $user = $request->user();
+
+        // If the user uses roles (e.g., Spatie) and has a superadmin role, redirect to superadmin dashboard.
+        if ($user && method_exists($user, 'hasRole') && $user->hasRole('superadmin')) {
+            return redirect()->route('superadmin.dashboard');
+        }
+
+        // Or check a boolean flag on the user model: 'is_superadmin'.
+        if ($user && (($user->is_superadmin ?? false) || ($user->type ?? '') === 'superadmin')) {
+            return redirect()->route('superadmin.dashboard');
+        }
+
+        // If the user is tied to a tenant (tenant_id), send them to the hotel admin dashboard
+        if ($user && !empty($user->tenant_id)) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        // Default: global dashboard
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
@@ -47,6 +65,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->route('login');
     }
 }

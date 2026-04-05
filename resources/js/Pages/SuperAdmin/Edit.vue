@@ -4,34 +4,32 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
     admin: {
         type: Object,
-        default: () => ({
-            id: 1, // Ejemplo
-            name: 'Admin Uno',
-            email: 'admin1@example.com',
-            start_date: '2023-01-01',
-            expiration_date: '2024-01-01',
-        }),
+        required: true,
     },
 });
 
 const form = useForm({
     name: props.admin.name,
     email: props.admin.email,
-    password: '', // La contraseña se deja en blanco por seguridad
+    password: '',
     password_confirmation: '',
-    start_date: props.admin.start_date,
-    expiration_date: props.admin.expiration_date,
 });
 
 const submit = () => {
-    // Lógica para enviar el formulario de actualización.
-    // Se conectará al backend cuando esté listo.
-    alert('Funcionalidad de edición pendiente de conexión con el backend.');
+    form
+        .transform((data) => ({
+            _method: 'put',
+            name: data.name,
+            email: data.email,
+            password: data.password,
+            password_confirmation: data.password_confirmation,
+        }))
+        .post(route('superadmin.admins.update', props.admin.id));
 };
 </script>
 
@@ -72,19 +70,8 @@ const submit = () => {
                                 <InputError class="mt-2" :message="form.errors.password_confirmation" />
                             </div>
 
-                            <div class="mt-4">
-                                <InputLabel for="start_date" value="Fecha de Inicio" />
-                                <TextInput id="start_date" type="date" class="mt-1 block w-full" v-model="form.start_date" required />
-                                <InputError class="mt-2" :message="form.errors.start_date" />
-                            </div>
-
-                            <div class="mt-4">
-                                <InputLabel for="expiration_date" value="Fecha de Expiración" />
-                                <TextInput id="expiration_date" type="date" class="mt-1 block w-full" v-model="form.expiration_date" required />
-                                <InputError class="mt-2" :message="form.errors.expiration_date" />
-                            </div>
-
                             <div class="flex items-center justify-end mt-4">
+                                <Link :href="route('superadmin.admins.index')" class="mr-3 text-sm text-gray-600 hover:text-gray-900">Cancelar</Link>
                                 <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                                     Actualizar Administrador
                                 </PrimaryButton>

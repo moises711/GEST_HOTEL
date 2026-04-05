@@ -1,21 +1,28 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { Head, router } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
-const modules = ref([
-  { id: 1, name: 'Reservas', active: true },
-  { id: 2, name: 'Habitaciones', active: true },
-  { id: 3, name: 'Facturación', active: true },
-  { id: 4, name: 'Reportes', active: false },
-  { id: 5, name: 'Usuarios', active: true },
-]);
+const props = defineProps({
+    plans: {
+        type: Array,
+        default: () => [],
+    },
+    modules: {
+        type: Array,
+        default: () => [],
+    },
+});
 
-const plans = [
-    { name: 'Básico', modules: ['Reservas', 'Habitaciones'] },
-    { name: 'Pro', modules: ['Reservas', 'Habitaciones', 'Facturación'] },
-    { name: 'Premium', modules: ['Reservas', 'Habitaciones', 'Facturación', 'Reportes', 'Usuarios'] },
-];
+const modules = computed(() => props.modules.map((name, index) => ({
+    id: index + 1,
+    name,
+    active: true,
+})));
+
+const goToPlanUsage = (planId) => {
+    router.get(route('superadmin.hotels.index'), { plan_id: planId });
+};
 
 </script>
 
@@ -33,7 +40,7 @@ const plans = [
                 <div class="p-6">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-medium text-gray-900">Módulos del Sistema</h3>
-                        <button class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
+                        <button @click="router.get(route('superadmin.plans.index'))" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
                            + Crear Módulo
                         </button>
                     </div>
@@ -54,15 +61,15 @@ const plans = [
                  <div class="p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Módulos por Plan</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div v-for="plan in plans" :key="plan.name" class="p-4 border rounded-lg">
+                        <div v-for="plan in props.plans" :key="plan.id" class="p-4 border rounded-lg">
                             <h4 class="font-bold text-lg text-blue-800 mb-3">{{ plan.name }}</h4>
                             <ul class="space-y-2">
-                                <li v-for="modName in plan.modules" :key="modName" class="flex items-center">
+                                <li v-for="modName in (plan.modules || [])" :key="modName" class="flex items-center">
                                     <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                                     <span>{{ modName }}</span>
                                 </li>
                             </ul>
-                            <button class="mt-4 text-sm text-blue-600 hover:underline">Editar Módulos del Plan</button>
+                            <button @click="goToPlanUsage(plan.id)" class="mt-4 text-sm text-blue-600 hover:underline">Editar Módulos del Plan</button>
                         </div>
                     </div>
                 </div>
