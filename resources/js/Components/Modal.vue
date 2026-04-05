@@ -55,7 +55,15 @@ const closeOnEscape = (e) => {
     }
 };
 
-onMounted(() => document.addEventListener('keydown', closeOnEscape));
+onMounted(() => {
+    document.addEventListener('keydown', closeOnEscape);
+
+    if (props.show) {
+        document.body.style.overflow = 'hidden';
+        showSlot.value = true;
+        dialog.value?.showModal();
+    }
+});
 
 onUnmounted(() => {
     document.removeEventListener('keydown', closeOnEscape);
